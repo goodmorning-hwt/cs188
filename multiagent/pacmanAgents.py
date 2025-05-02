@@ -14,7 +14,7 @@
 
 from pacman import Directions
 from game import Agent
-import random
+import random  
 import game
 import util
 

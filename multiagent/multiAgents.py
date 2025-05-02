@@ -75,7 +75,15 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        score = successorGameState.getScore()
+        food_list = newFood.asList()
+        if food_list:
+            food_distances = [manhattanDistance(newPos, food) for food in food_list]
+            closest_food_distance = min(food_distances)
+            score += 1 / closest_food_distance
+        else :
+            score += 1000
+        return score
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
@@ -103,7 +111,7 @@ class MultiAgentSearchAgent(Agent):
     """
 
     def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-        self.index = 0 # Pacman is always agent index 0
+        self.index=0   # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
