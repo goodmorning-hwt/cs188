@@ -150,13 +150,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        PACMAN = 0
-
         def minimax(gameState, depth, agentIndex):
             if gameState.isWin() or gameState.isLose() or depth == 0:
                 return self.evaluationFunction(gameState)
 
-            if agentIndex == PACMAN:
+            if agentIndex == 0:  # Pacman
                 return maxValue(gameState, depth, agentIndex)
             else:
                 return minValue(gameState, depth, agentIndex)
@@ -182,6 +180,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 return self.evaluationFunction(gameState)
             minVal = float("inf")
             numAgents = gameState.getNumAgents()
+
             for action in legalActions:
                 successor = gameState.generateSuccessor(agentIndex, action)
                 minVal = min(
@@ -195,13 +194,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return minVal
 
         legalActions = gameState.getLegalActions(0)
+
         bestAction = None
         bestValue = float("-inf")
         for action in legalActions:
             successor = gameState.generateSuccessor(0, action)
-            currentValue = minimax(successor, self.depth - 1, 1)
+            currentValue = minimax(successor, self.depth, 1)
             if currentValue > bestValue:
-                currentValue = bestValue
+                bestValue = currentValue
                 bestAction = action
         return bestAction
 
