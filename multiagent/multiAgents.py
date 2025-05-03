@@ -218,7 +218,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
 
-        def minimax(gameState, depth, agentIndex, alpha, beta):
+        def alphaBeta(gameState, depth, agentIndex, alpha, beta):
             if gameState.isWin() or gameState.isLose() or depth == 0:
                 return self.evaluationFunction(gameState)
 
@@ -236,7 +236,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 successor = gameState.generateSuccessor(agentIndex, action)
                 maxVal = max(
                     maxVal,
-                    minimax(
+                    alphaBeta(
                         successor,
                         depth,
                         (agentIndex + 1) % gameState.getNumAgents(),
@@ -262,7 +262,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 successor = gameState.generateSuccessor(agentIndex, action)
                 minVal = min(
                     minVal,
-                    minimax(
+                    alphaBeta(
                         successor,
                         depth - (agentIndex == numAgents - 1),
                         (agentIndex + 1) % gameState.getNumAgents(),
@@ -283,7 +283,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         beta = float("inf")
         for action in legalActions:
             successor = gameState.generateSuccessor(0, action)
-            currentValue = minimax(successor, self.depth, 1, alpha, beta)
+            currentValue = alphaBeta(successor, self.depth, 1, alpha, beta)
             if currentValue > bestValue:
                 bestValue = currentValue
                 bestAction = action
@@ -304,7 +304,61 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # util.raiseNotDefined()
+        def minimax(gameState, depth, agentIndex):
+            if gameState.isWin() or gameState.isLose() or depth == 0:
+                return self.evaluationFunction(gameState)
+
+            if agentIndex == 0:  # Pacman
+                return maxValue(gameState, depth, agentIndex)
+            else:
+                return expectValue(gameState, depth, agentIndex)
+
+        def maxValue(gameState, depth, agentIndex):
+            legalActions = gameState.getLegalActions(agentIndex)
+            if not legalActions:
+                return self.evaluationFunction(gameState)
+            maxVal = float("-inf")
+            for action in legalActions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                maxVal = max(
+                    maxVal,
+                    minimax(
+                        successor, depth, (agentIndex + 1) % gameState.getNumAgents()
+                    ),
+                )
+            return maxVal
+
+        def expectValue(gameState, depth, agentIndex):
+            legalActions = gameState.getLegalActions(agentIndex)
+            if not legalActions:
+                return self.evaluationFunction(gameState)
+            minVal = float("inf")
+            numAgents = gameState.getNumAgents()
+            expectValue = 0
+            probability = (1 / len(legalActions)) if legalActions else 0
+
+            for action in legalActions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                expectValue += probability * minimax(
+                    successor,
+                    depth - (agentIndex == numAgents - 1),
+                    (agentIndex + 1) % gameState.getNumAgents(),
+                )
+            return expectValue
+
+        legalActions = gameState.getLegalActions(0)
+
+        bestAction = None
+        bestValue = float("-inf")
+        for action in legalActions:
+            successor = gameState.generateSuccessor(0, action)
+            currentValue = minimax(successor, self.depth, 1)
+            if currentValue > bestValue:
+                bestValue = currentValue
+                bestAction = action
+        return bestAction
 
 
 def betterEvaluationFunction(currentGameState: GameState):
