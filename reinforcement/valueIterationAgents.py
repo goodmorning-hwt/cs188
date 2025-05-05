@@ -110,9 +110,15 @@ class ValueIterationAgent(ValueEstimationAgent):
         # util.raiseNotDefined()
         if self.mdp.isTerminal(state):
             return None
+
+        actions = self.mdp.getPossibleActions(state)
+        if not actions:
+            return None
+
         q_values = util.Counter()
-        for action in self.mdp.getPossibleActions(state):
+        for action in actions:
             q_values[action] = self.computeQValueFromValues(state, action)
+
         return q_values.argMax()
 
 
