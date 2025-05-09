@@ -754,5 +754,10 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newParticles = []
+        for oldParticle in self.particles:
+            newPosDist = self.getPositionDistribution(gameState, oldParticle)
+            newParticle = newPosDist.sample()
+            newParticles.append(newParticle)
+        self.particles = newParticles
         "*** END YOUR CODE HERE ***"
